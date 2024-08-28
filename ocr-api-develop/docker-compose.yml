@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # ocr-api:
+  #   container_name: ocr-api
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   image: ocr-system:v1
+  #   volumes:
+  #     - .:/app
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     - ENV=development
+  #     - PYTHONPATH=/app
+  #   command: python app/main.py
+  #   depends_on:
+  #     - mongodb
+  mongodb:
+    # image: mongo:5.0.6
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    ports:
+      - 27018:27017
+    volumes:
+      - mongodb:/data/db
+    restart: always
+    command: mongod --auth
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: admin
+      ME_CONFIG_MONGODB_SERVER: host.docker.internal
+      ME_CONFIG_MONGODB_PORT: "27018"
+    ports:
+      - "0.0.0.0:8081:8081"
+    depends_on:
+      - mongodb
+
+volumes:
+  mongodb:
